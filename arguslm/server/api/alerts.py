@@ -4,7 +4,7 @@ from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import and_, desc, select
+from sqlalchemy import and_, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from arguslm.schemas.alert import (
@@ -185,9 +185,8 @@ async def list_alerts(
         conditions.append(Alert.created_at >= since)
 
     # Get total unacknowledged count
-    unack_stmt = select(Alert).where(Alert.acknowledged.is_(False))
-    unack_result = await db.execute(unack_stmt)
-    unacknowledged_count = len(unack_result.scalars().all())
+    unack_stmt = select(func.count()).select_from(Alert).where(Alert.acknowledged.is_(False))
+    unacknowledged_count = (await db.execute(unack_stmt)).scalar_one()
 
     # Get paginated results
     stmt = select(Alert)
@@ -218,9 +217,8 @@ async def get_unread_count(db: AsyncSession = Depends(get_db)) -> UnreadCountRes
     Returns:
         Count of unacknowledged alerts.
     """
-    stmt = select(Alert).where(Alert.acknowledged.is_(False))
-    result = await db.execute(stmt)
-    count = len(result.scalars().all())
+    stmt = select(func.count()).select_from(Alert).where(Alert.acknowledged.is_(False))
+    count = (await db.execute(stmt)).scalar_one()
     return UnreadCountResponse(count=count)
 
 
@@ -247,9 +245,8 @@ async def get_recent_alerts(
     alerts = result.scalars().all()
 
     # Get total unread count
-    unread_stmt = select(Alert).where(Alert.acknowledged.is_(False))
-    unread_result = await db.execute(unread_stmt)
-    total_unread = len(unread_result.scalars().all())
+    unread_stmt = select(func.count()).select_from(Alert).where(Alert.acknowledged.is_(False))
+    total_unread = (await db.execute(unread_stmt)).scalar_one()
 
     return RecentAlertsResponse(
         items=[AlertResponse.model_validate(alert) for alert in alerts],
