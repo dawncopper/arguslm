@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import uuid
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
 
 from fastapi import (
     APIRouter,
@@ -40,9 +39,6 @@ from arguslm.server.core.benchmark_engine import (
 from arguslm.server.db.init import get_db
 from arguslm.server.models.benchmark import BenchmarkResult, BenchmarkRun
 from arguslm.server.models.model import Model
-
-if TYPE_CHECKING:
-    pass
 
 router = APIRouter(prefix="/api/v1/benchmarks", tags=["benchmarks"])
 

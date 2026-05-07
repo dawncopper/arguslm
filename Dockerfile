@@ -13,8 +13,10 @@ COPY data ./data
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -e ".[server,dev]"
 
-# Run tests to verify build
-RUN pytest tests/ --tb=short || true
+# Note: tests are run by CI on every commit (matrix across Python 3.11–3.14).
+# We deliberately do NOT run pytest here — `RUN pytest ... || true` masks
+# failures and would let a broken build ship to Docker Hub via the auto-publish
+# workflow on tag push. CI is the gate; the Docker build only assembles bytes.
 
 # Stage 2: Runtime - production image with only runtime dependencies
 FROM python:3.14-slim

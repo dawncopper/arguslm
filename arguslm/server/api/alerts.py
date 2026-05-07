@@ -179,7 +179,7 @@ async def list_alerts(
         conditions.append(Alert.rule_id == rule_id)
 
     if acknowledged is not None:
-        conditions.append(Alert.acknowledged == acknowledged)
+        conditions.append(Alert.acknowledged.is_(acknowledged))
 
     if since is not None:
         conditions.append(Alert.created_at >= since)

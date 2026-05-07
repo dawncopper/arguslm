@@ -5,6 +5,8 @@ from functools import lru_cache
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from arguslm import __version__
+
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
@@ -26,7 +28,7 @@ class Settings(BaseSettings):
 
     # API
     api_title: str = "ArgusLM API"
-    api_version: str = "0.2.0"
+    api_version: str = __version__
     api_prefix: str = "/api/v1"
 
     # CORS

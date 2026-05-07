@@ -6,16 +6,12 @@ creating duplicate alerts for the same ongoing incident.
 """
 
 import uuid
-from typing import TYPE_CHECKING
 
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from arguslm.server.models.alert import Alert, AlertRule
 from arguslm.server.models.monitoring import UptimeCheck
-
-if TYPE_CHECKING:
-    pass
 
 
 async def evaluate_alerts(
