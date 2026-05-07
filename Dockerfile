@@ -29,7 +29,10 @@ COPY --from=builder /usr/local/lib/python3.14/site-packages /usr/local/lib/pytho
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
-COPY --chown=appuser:appuser arguslm ./arguslm
+# --chmod=555 makes the application code read-only at runtime (no write,
+# even by appuser). The container can still read and execute, but a
+# compromised process can't modify its own code.
+COPY --chown=appuser:appuser --chmod=555 arguslm ./arguslm
 
 # Set Python environment variables
 ENV PYTHONUNBUFFERED=1 \
