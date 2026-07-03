@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { LayoutDashboard, Server, Box, BarChart2, Activity, Settings } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import DashboardPage from './pages/DashboardPage';
 import { ProvidersPage } from './pages/ProvidersPage';
 import { ModelsPage } from './pages/ModelsPage';
@@ -9,9 +10,10 @@ import MonitoringPage from './pages/MonitoringPage';
 import SettingsPage from './pages/SettingsPage';
 import { NotificationBell } from './components/NotificationBell';
 
-const SidebarItem = ({ to, icon, label }: { to: string; icon: React.ReactNode; label: string }) => {
+const SidebarItem = ({ to, icon, labelKey }: { to: string; icon: React.ReactNode; labelKey: string }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
+  const { t } = useTranslation();
   
   return (
     <Link
@@ -23,7 +25,7 @@ const SidebarItem = ({ to, icon, label }: { to: string; icon: React.ReactNode; l
       }`}
     >
       {icon}
-      <span className="font-medium">{label}</span>
+      <span className="font-medium">{t(labelKey)}</span>
     </Link>
   );
 };
@@ -44,15 +46,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
         
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          <SidebarItem to="/dashboard" icon={<LayoutDashboard className="w-5 h-5" />} label="Dashboard" />
-          <SidebarItem to="/providers" icon={<Server className="w-5 h-5" />} label="Providers" />
-          <SidebarItem to="/models" icon={<Box className="w-5 h-5" />} label="Models" />
-          <SidebarItem to="/benchmarks" icon={<BarChart2 className="w-5 h-5" />} label="Benchmarks" />
-          <SidebarItem to="/monitoring" icon={<Activity className="w-5 h-5" />} label="Monitoring" />
+          <SidebarItem to="/dashboard" icon={<LayoutDashboard className="w-5 h-5" />} labelKey="dashboard" />
+          <SidebarItem to="/providers" icon={<Server className="w-5 h-5" />} labelKey="providers" />
+          <SidebarItem to="/models" icon={<Box className="w-5 h-5" />} labelKey="models" />
+          <SidebarItem to="/benchmarks" icon={<BarChart2 className="w-5 h-5" />} labelKey="benchmarks" />
+          <SidebarItem to="/monitoring" icon={<Activity className="w-5 h-5" />} labelKey="monitoring" />
         </nav>
-
+        
         <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-          <SidebarItem to="/settings" icon={<Settings className="w-5 h-5" />} label="Settings" />
+          <SidebarItem to="/settings" icon={<Settings className="w-5 h-5" />} labelKey="settings" />
         </div>
       </aside>
 

@@ -23,6 +23,7 @@ import {
   ResponsiveContainer,
   ReferenceDot
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import { getDashboardData } from '../api/dashboard';
 import { DashboardData } from '../types/dashboard';
 
@@ -41,6 +42,7 @@ const DashboardPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [timeRange, setTimeRange] = useState<'5m' | '1h' | '24h' | '7d' | '30d'>('1h');
+  const { t } = useTranslation();
 
   const fetchData = async () => {
     try {
@@ -50,7 +52,7 @@ const DashboardPage: React.FC = () => {
       setLastRefresh(new Date());
       setError(null);
     } catch (err) {
-      setError('Failed to fetch dashboard data');
+      setError(t('failedToFetch'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -83,10 +85,10 @@ const DashboardPage: React.FC = () => {
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
     
-    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    if (diffInSeconds < 60) return t('secondsAgo', { count: diffInSeconds });
+    if (diffInSeconds < 3600) return t('minutesAgo', { count: Math.floor(diffInSeconds / 60) });
+    if (diffInSeconds < 86400) return t('hoursAgo', { count: Math.floor(diffInSeconds / 3600) });
+    return t('daysAgo', { count: Math.floor(diffInSeconds / 86400) });
   };
 
   if (loading && !data) {
@@ -103,7 +105,7 @@ const DashboardPage: React.FC = () => {
         <div className="text-red-500 flex items-center gap-2">
           <AlertCircle size={24} />
           <span>{error}</span>
-          <button onClick={fetchData} className="underline ml-2">Retry</button>
+          <button onClick={fetchData} className="underline ml-2">{t('retry')}</button>
         </div>
       </div>
     );
@@ -118,9 +120,9 @@ const DashboardPage: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('dashboard')}</h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            Last updated: {lastRefresh.toLocaleTimeString()}
+            {t('lastUpdated', { time: lastRefresh.toLocaleTimeString() })}
           </p>
         </div>
         <button 
@@ -128,7 +130,7 @@ const DashboardPage: React.FC = () => {
           className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors shadow-sm"
         >
           <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-          Refresh
+          {t('refresh')}
         </button>
       </div>
 
@@ -138,7 +140,7 @@ const DashboardPage: React.FC = () => {
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Models</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('totalModels')}</p>
               <h3 className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{data?.stats.totalModels || 0}</h3>
             </div>
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
@@ -151,7 +153,7 @@ const DashboardPage: React.FC = () => {
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Model Health</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('modelHealth')}</p>
               <div className="flex gap-3 mt-2">
                 <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                   <CheckCircle size={16} />
@@ -177,9 +179,9 @@ const DashboardPage: React.FC = () => {
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Last Check</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('lastCheck')}</p>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mt-2">
-                {data?.stats.lastCheck ? formatRelativeTime(data.stats.lastCheck) : 'Never'}
+                {data?.stats.lastCheck ? formatRelativeTime(data.stats.lastCheck) : t('never')}
               </h3>
             </div>
             <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400">
@@ -192,7 +194,7 @@ const DashboardPage: React.FC = () => {
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Alerts</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('activeAlerts')}</p>
               <h3 className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{data?.stats.unacknowledgedAlerts || 0}</h3>
             </div>
             <div className={`p-3 rounded-lg ${(data?.stats.unacknowledgedAlerts || 0) > 0 ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400' : 'bg-gray-50 dark:bg-gray-950 text-gray-400 dark:text-gray-500'}`}>
@@ -204,7 +206,7 @@ const DashboardPage: React.FC = () => {
 
       {/* Section 2: Uptime Grid */}
       <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Model Status</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('modelStatus')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {data?.uptimeChecks.map((check) => (
             <div key={check.id} className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow">
@@ -217,31 +219,31 @@ const DashboardPage: React.FC = () => {
                   check.status === 'down' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
                   'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
                 }`}>
-                  {check.status.toUpperCase()}
+                  {t(`status${check.status.charAt(0).toUpperCase() + check.status.slice(1)}`)}
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <div className="text-center">
-                  <span className="block text-xs">Latency</span>
+                  <span className="block text-xs">{t('metricLatency')}</span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">
                     {check.latency_ms ? `${Math.round(check.latency_ms)}ms` : '-'}
                   </span>
                 </div>
                 <div className="text-center">
-                  <span className="block text-xs">TTFT</span>
+                  <span className="block text-xs">{t('metricTtft')}</span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">
                     {check.ttft_ms ? `${Math.round(check.ttft_ms)}ms` : '-'}
                   </span>
                 </div>
                 <div className="text-center">
-                  <span className="block text-xs">TPS</span>
+                  <span className="block text-xs">{t('metricTps')}</span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">
                     {check.tps ? `${check.tps.toFixed(1)}` : '-'}
                   </span>
                 </div>
               </div>
               <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-2">
-                <span>Checked</span>
+                <span>{t('lastCheck')}</span>
                 <span>{formatTimeWithTimezone(check.created_at)}</span>
               </div>
             </div>
@@ -253,7 +255,7 @@ const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Performance Trends</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('performanceTrends')}</h2>
             <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
               {(['5m', '1h', '24h', '7d', '30d'] as const).map((range) => (
                 <button
@@ -265,7 +267,7 @@ const DashboardPage: React.FC = () => {
                       : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300'
                   }`}
                 >
-                  {range}
+                  {t(`timeRange${range}`)}
                 </button>
               ))}
             </div>
@@ -274,7 +276,7 @@ const DashboardPage: React.FC = () => {
           <div className="space-y-8">
             {/* Latency History Chart */}
             <div className="h-[400px]">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">Latency History (ms)</h3>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">{t('latencyHistory')}</h3>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data?.performanceHistory}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -317,7 +319,7 @@ const DashboardPage: React.FC = () => {
 
             {/* TTFT History Chart */}
             <div className="h-[400px]">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">TTFT History (ms)</h3>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">{t('ttftHistory')}</h3>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data?.ttftHistory}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -360,7 +362,7 @@ const DashboardPage: React.FC = () => {
 
             {/* TPS History Chart */}
             <div className="h-[400px]">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">TPS History (tokens/sec, excluding TTFT)</h3>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">{t('tpsHistory')}</h3>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data?.tpsHistory}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -404,10 +406,12 @@ const DashboardPage: React.FC = () => {
             {/* Availability History Chart */}
             <div className="h-[400px]">
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">
-                Model Availability (%)
+                {t('availabilityHistory')}
                 {data?.failureEvents && data.failureEvents.length > 0 && (
                   <span className="ml-2 text-xs text-red-500">
-                    • {data.failureEvents.length} failure event{data.failureEvents.length > 1 ? 's' : ''}
+                    • {data.failureEvents.length === 1 
+                      ? t('failureEvents', { count: data.failureEvents.length })
+                      : t('failureEventsPlural', { count: data.failureEvents.length })}
                   </span>
                 )}
               </h3>
@@ -480,11 +484,11 @@ const DashboardPage: React.FC = () => {
         <div className="space-y-6">
           {/* Performance Comparison */}
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Performance by Model</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">{t('performanceByModel')}</h2>
             <div style={{ height: Math.max(400, (data?.latencyComparison?.length ?? 0) * 60 + 100) }}>
               {data?.latencyComparison && data.latencyComparison.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data.latencyComparison} layout="vertical" margin={{ left: 10, right: 30 }}>
+                  <BarChart data={data.latencyComparison} layout="horizontal" margin={{ left: 10, right: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#E5E7EB" />
                     <XAxis 
                       type="number" 
@@ -525,14 +529,14 @@ const DashboardPage: React.FC = () => {
                       }}
                     />
                     <Legend />
-                    <Bar dataKey="latency" name="Latency (ms)" fill="#3B82F6" radius={[0, 4, 4, 0]} barSize={8} />
-                    <Bar dataKey="ttft" name="TTFT (ms)" fill="#10B981" radius={[0, 4, 4, 0]} barSize={8} />
-                    <Bar dataKey="tps_scaled" name="TPS ×10" fill="#F59E0B" radius={[0, 4, 4, 0]} barSize={8} />
+                    <Bar dataKey="latency" name={t('metricLatency') + ' (ms)'} fill="#3B82F6" radius={[0, 4, 4, 0]} barSize={8} />
+                    <Bar dataKey="ttft" name={t('metricTtft') + ' (ms)'} fill="#10B981" radius={[0, 4, 4, 0]} barSize={8} />
+                    <Bar dataKey="tps_scaled" name={t('metricTps') + ' ×10'} fill="#F59E0B" radius={[0, 4, 4, 0]} barSize={8} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
                 <div className="h-full flex items-center justify-center text-gray-400 dark:text-gray-500">
-                  <p>No performance data available</p>
+                  <p>{t('noPerformanceData')}</p>
                 </div>
               )}
             </div>
@@ -540,7 +544,7 @@ const DashboardPage: React.FC = () => {
 
           {/* Recent Activity */}
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 flex-1">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('recentActivity')}</h2>
             <div className="space-y-4">
               {data?.recentActivity.map((item) => (
                 <div key={item.id} className="flex gap-3 items-start">
@@ -566,7 +570,7 @@ const DashboardPage: React.FC = () => {
                 </div>
               ))}
               {(!data?.recentActivity || data.recentActivity.length === 0) && (
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No recent activity</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">{t('noRecentActivity')}</p>
               )}
             </div>
           </div>
