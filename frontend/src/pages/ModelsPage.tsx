@@ -271,17 +271,17 @@ export const ModelsPage = () => {
       <Modal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        title="Add Manual Model"
+        title={t('addManualModel')}
         footer={
           <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               onClick={() => createModelMutation.mutate(newModelData)}
               disabled={!newModelData.provider_account_id || !newModelData.model_id || createModelMutation.isPending}
             >
-              {createModelMutation.isPending ? 'Adding...' : 'Add Model'}
+              {createModelMutation.isPending ? t('adding') : t('addModel')}
             </Button>
           </div>
         }
@@ -289,7 +289,7 @@ export const ModelsPage = () => {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Provider
+              {t('provider')}
             </label>
             <select
               value={newModelData.provider_account_id}
