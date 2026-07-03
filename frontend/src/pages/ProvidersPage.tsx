@@ -216,12 +216,12 @@ export const ProvidersPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-950 text-gray-400">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="font-mono text-sm tracking-wider">INITIALIZING SYSTEM...</p>
-        </div>
-      </div>
+          <div className="flex items-center justify-center h-screen bg-gray-950 text-gray-400">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <p className="font-mono text-sm tracking-wider">{t('initializing')}</p>
+            </div>
+          </div>
     );
   }
 
@@ -347,7 +347,7 @@ export const ProvidersPage = () => {
                             onClick={() => testMutation.mutate(provider.id)}
                             isLoading={testMutation.isPending && testMutation.variables === provider.id}
                           >
-                            Run Test
+                            {t('runTest')}
                           </Button>
                         </div>
               {testResults[provider.id] && (
@@ -366,7 +366,7 @@ export const ProvidersPage = () => {
 
                       <div className="p-4 rounded-lg bg-gray-900/50 border border-gray-800 space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-300">Model Catalog</span>
+                              <span className="text-sm text-gray-300">{t('modelCatalog')}</span>
                           <div className="flex gap-2">
                             <Button 
                               size="sm" 
@@ -405,7 +405,7 @@ export const ProvidersPage = () => {
                           onClick={() => handleDelete(provider.id)}
                           isLoading={deleteMutation.isPending && deleteMutation.variables === provider.id}
                         >
-                          Delete Provider
+                          {t('deleteProvider')}
                         </Button>
                       </div>
                     </div>
@@ -418,10 +418,10 @@ export const ProvidersPage = () => {
           {providers?.length === 0 && (
             <div className="text-center py-20 border-2 border-dashed border-gray-800 rounded-lg bg-gray-900/20">
               <Server className="w-12 h-12 mx-auto text-gray-700 mb-4" />
-              <h3 className="text-lg font-medium text-gray-300">No Providers Configured</h3>
-              <p className="text-gray-500 mt-2 mb-6 max-w-sm mx-auto">Add your first LLM provider to start monitoring performance and costs.</p>
+                <h3 className="text-lg font-medium text-gray-300">{t('noProviders')}</h3>
+                <p className="text-gray-500 mt-2 mb-6 max-w-sm mx-auto">{t('addFirstProvider')}</p>
               <Button onClick={() => setIsAddModalOpen(true)} icon={<Plus className="w-4 h-4" />}>
-                Add Provider
+                {t('addProvider')}
               </Button>
             </div>
           )}
@@ -431,11 +431,11 @@ export const ProvidersPage = () => {
       <Modal
         isOpen={isAddModalOpen}
         onClose={() => { setIsAddModalOpen(false); setConnectionTestResult(null); }}
-        title="Add New Provider"
+        title={t('addNewProvider')}
         footer={
           <>
-            <Button variant="ghost" onClick={() => { setIsAddModalOpen(false); setConnectionTestResult(null); }}>Cancel</Button>
-            <Button onClick={handleCreate} isLoading={createMutation.isPending}>Create Provider</Button>
+            <Button variant="ghost" onClick={() => { setIsAddModalOpen(false); setConnectionTestResult(null); }}>{t('cancel')}</Button>
+            <Button onClick={handleCreate} isLoading={createMutation.isPending}>{t('createProvider')}</Button>
           </>
         }
       >
@@ -510,7 +510,7 @@ export const ProvidersPage = () => {
 
           <div className="pt-2 border-t border-gray-800 mt-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-sm font-medium text-gray-400">Connection Test</h4>
+            <h4 className="text-sm font-medium text-gray-400">Connection Test</h4>
               <Button 
                 type="button"
                 size="sm" 
@@ -526,7 +526,7 @@ export const ProvidersPage = () => {
               <div className={`text-xs p-3 rounded border ${connectionTestResult.success ? 'bg-green-900/20 border-green-900 text-green-400' : 'bg-red-900/20 border-red-900 text-red-400'}`}>
                 <div className="flex items-center gap-2 font-bold">
                   {connectionTestResult.success ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                  {connectionTestResult.success ? 'CONNECTION SUCCESSFUL' : 'CONNECTION FAILED'}
+                {connectionTestResult.success ? t('connectionSuccessful') : t('connectionFailed')}
                 </div>
                 <div className="mt-1 font-mono opacity-80 break-all whitespace-pre-wrap">
                   {connectionTestResult.message}
