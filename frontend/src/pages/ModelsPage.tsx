@@ -12,6 +12,7 @@ import { Modal } from '../components/ui/Modal';
 import { Search, Filter, Loader2, ChevronLeft, ChevronRight, Edit2, Check, X } from 'lucide-react';
 
 export const ModelsPage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [providerFilter, setProviderFilter] = useState<string>('');
@@ -102,10 +103,10 @@ export const ModelsPage = () => {
     <div className="container mx-auto py-8 px-4 max-w-7xl">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">Models</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage and monitor your LLM models</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">{t('models')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('manageModels')}</p>
         </div>
-        <Button onClick={() => setIsAddModalOpen(true)}>Add Manual Model</Button>
+        <Button onClick={() => setIsAddModalOpen(true)}>{t('addManualModel')}</Button>
       </div>
 
       {/* Filters */}
@@ -113,7 +114,7 @@ export const ModelsPage = () => {
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
           <Input
-            placeholder="Search models..."
+            placeholder={t('searchModels')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -126,7 +127,7 @@ export const ModelsPage = () => {
             onChange={(e) => setProviderFilter(e.target.value)}
             className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 pl-9 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-50 appearance-none"
           >
-            <option value="">All Providers</option>
+            <option value="">{t('allProviders')}</option>
             {providers.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -142,11 +143,11 @@ export const ModelsPage = () => {
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 font-medium border-b border-gray-200 dark:border-gray-800">
               <tr>
-                <th className="px-6 py-3">Name</th>
-                <th className="px-6 py-3">Provider</th>
-                <th className="px-6 py-3">Source</th>
-                <th className="px-6 py-3 text-center">Monitoring</th>
-                <th className="px-6 py-3 text-center">Benchmark</th>
+                <th className="px-6 py-3">{t('name')}</th>
+                <th className="px-6 py-3">{t('provider')}</th>
+                <th className="px-6 py-3">{t('source')}</th>
+                <th className="px-6 py-3 text-center">{t('monitoring')}</th>
+                <th className="px-6 py-3 text-center">{t('benchmark')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
@@ -159,7 +160,7 @@ export const ModelsPage = () => {
               ) : isError ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-red-500">
-                    Failed to load models
+                    {t('failedToLoadModels')}
                   </td>
                 </tr>
               ) : models && models.length > 0 ? (
@@ -232,11 +233,9 @@ export const ModelsPage = () => {
                   </tr>
                 ))
               ) : (
-                <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                    No models found
-                  </td>
-                </tr>
+                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                  {t('noModels')}
+                </td>
               )}
             </tbody>
           </table>
