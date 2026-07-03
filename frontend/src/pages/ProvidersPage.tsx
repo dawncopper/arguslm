@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { 
   Plus, 
   RefreshCw, 
@@ -34,6 +35,7 @@ import { Toggle } from '../components/ui/Toggle';
 import { Card } from '../components/ui/Card';
 
 export const ProvidersPage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [expandedProviderId, setExpandedProviderId] = useState<string | null>(null);
@@ -230,7 +232,7 @@ export const ProvidersPage = () => {
           <Activity className="w-16 h-16 mx-auto opacity-50" />
           <h2 className="text-xl font-bold tracking-tight">SYSTEM ERROR</h2>
           <p className="font-mono text-sm">{(error as Error).message}</p>
-          <Button onClick={() => window.location.reload()} variant="secondary">RETRY CONNECTION</Button>
+          <Button onClick={() => window.location.reload()} variant="secondary">{t('retryConnection')}</Button>
         </div>
       </div>
     );
@@ -238,16 +240,16 @@ export const ProvidersPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 p-8 font-sans">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <div className="flex items-center justify-between border-b border-gray-800 pb-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Provider Management</h1>
-            <p className="text-gray-400">Configure and monitor LLM service providers.</p>
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div className="flex items-center justify-between border-b border-gray-800 pb-6">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-white mb-2">{t('providerManagement')}</h1>
+              <p className="text-gray-400">{t('configureProviders')}</p>
+            </div>
+            <Button onClick={() => setIsAddModalOpen(true)} icon={<Plus className="w-4 h-4" />}>
+              {t('addProvider')}
+            </Button>
           </div>
-          <Button onClick={() => setIsAddModalOpen(true)} icon={<Plus className="w-4 h-4" />}>
-            Add Provider
-          </Button>
-        </div>
 
         <div className="grid gap-4">
           {providers?.map((provider) => (
@@ -267,11 +269,11 @@ export const ProvidersPage = () => {
                     <div className="flex items-center space-x-4 mt-1 text-sm text-gray-500">
                       <span className="flex items-center gap-1">
                         <Activity className="w-3 h-3" />
-                        {provider.is_enabled ? 'Active' : 'Disabled'}
+                        {provider.is_enabled ? t('active') : t('disabled')}
                       </span>
                       <span className="flex items-center gap-1 font-mono text-xs truncate max-w-[200px]">
                         <Globe className="w-3 h-3" />
-                        {provider.base_url || '(Default)'}
+                        {provider.base_url || `(${t('default')})`}
                       </span>
                     </div>
                   </div>
@@ -279,7 +281,7 @@ export const ProvidersPage = () => {
 
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2 mr-4">
-                    <span className="text-sm text-gray-500 uppercase text-xs font-bold tracking-wider">Status</span>
+                    <span className="text-sm text-gray-500 uppercase text-xs font-bold tracking-wider">{t('status')}</span>
                     <Toggle 
                       checked={provider.is_enabled} 
                       onCheckedChange={(checked) => updateMutation.mutate({ id: provider.id, data: { is_enabled: checked } })} 
@@ -300,26 +302,25 @@ export const ProvidersPage = () => {
                 <div className="px-6 pb-6 pt-0 border-t border-gray-800/50 animate-in slide-in-from-top-2 duration-200">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div className="space-y-4">
-                      <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Configuration</h4>
+                      <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">{t('configuration')}</h4>
                       <Input 
-                        label="Display Name" 
+                        label={t('displayName')} 
                         defaultValue={provider.name}
                         onBlur={(e) => updateMutation.mutate({ id: provider.id, data: { name: e.target.value } })}
                       />
                       <Input 
-                        label="API Key" 
+                        label={t('apiKey')} 
                         type="password" 
                         placeholder="••••••••••••••••"
                         defaultValue={provider.api_key ? '••••••••' : ''}
                         onChange={(e) => {
-                          // Only update if value is not empty and not the mask
                           if (e.target.value && e.target.value !== '••••••••') {
                              updateMutation.mutate({ id: provider.id, data: { api_key: e.target.value } });
                           }
                         }}
                       />
                       <Input 
-                        label="Base URL" 
+                        label={t('baseUrl')} 
                         defaultValue={provider.base_url}
                         placeholder="https://api.example.com/v1"
                         onBlur={(e) => updateMutation.mutate({ id: provider.id, data: { base_url: e.target.value } })}
@@ -335,11 +336,11 @@ export const ProvidersPage = () => {
                     </div>
                     
                     <div className="space-y-4">
-                      <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Actions</h4>
+                      <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">{t('actions')}</h4>
                       
                       <div className="p-4 rounded-lg bg-gray-900/50 border border-gray-800 space-y-4">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-300">Connection Test</span>
+                          <span className="text-sm text-gray-300">{t('connectionTest')}</span>
                           <Button 
                             size="sm" 
                             variant="secondary" 
@@ -349,12 +350,12 @@ export const ProvidersPage = () => {
                             Run Test
                           </Button>
                         </div>
-                        {testResults[provider.id] && (
-                          <div className={`text-xs p-2 rounded border ${testResults[provider.id].success ? 'bg-green-900/20 border-green-900 text-green-400' : 'bg-red-900/20 border-red-900 text-red-400'}`}>
-                            <div className="flex items-center gap-2 font-bold">
-                              {testResults[provider.id].success ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                              {testResults[provider.id].success ? 'CONNECTION SUCCESSFUL' : 'CONNECTION FAILED'}
-                            </div>
+              {testResults[provider.id] && (
+                <div className={`text-xs p-2 rounded border ${testResults[provider.id].success ? 'bg-green-900/20 border-green-900 text-green-400' : 'bg-red-900/20 border-red-900 text-red-400'}`}>
+                  <div className="flex items-center gap-2 font-bold">
+                    {testResults[provider.id].success ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                    {testResults[provider.id].success ? t('connectionSuccessful') : t('connectionFailed')}
+                  </div>
                             <div className="mt-1 font-mono opacity-80">
                               {testResults[provider.id].message}
                               {testResults[provider.id].latency && ` (${testResults[provider.id].latency}ms)`}
@@ -373,17 +374,17 @@ export const ProvidersPage = () => {
                               icon={<Plus className="w-3 h-3" />}
                               onClick={() => setAddModelProviderId(provider.id)}
                             >
-                              Add Model
+                              {t('addModel')}
                             </Button>
-                            <Button 
-                              size="sm" 
-                              variant="secondary"
-                              icon={<RefreshCw className="w-3 h-3" />}
-                              onClick={() => refreshModelsMutation.mutate(provider.id)}
-                              isLoading={refreshModelsMutation.isPending && refreshModelsMutation.variables === provider.id}
-                            >
-                              Refresh
-                            </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="secondary"
+                                  icon={<RefreshCw className="w-3 h-3" />}
+                                  onClick={() => refreshModelsMutation.mutate(provider.id)}
+                                  isLoading={refreshModelsMutation.isPending && refreshModelsMutation.variables === provider.id}
+                                >
+                                  {t('refresh')}
+                                </Button>
                           </div>
                         </div>
                         {provider.provider_type === 'azure_openai' && (
